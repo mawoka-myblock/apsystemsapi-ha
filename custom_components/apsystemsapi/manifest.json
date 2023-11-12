@@ -1,0 +1,20 @@
+{
+  "domain": "apsystemsapi",
+  "integration_type": "device",
+  "name": "APsystems API",
+  "codeowners": [
+    "@mawoka-myblock"
+  ],
+  "config_flow": false,
+  "dependencies": [],
+  "documentation": "https://github.com/mawoka-myblock/apsystemsapi-ha",
+  "homekit": {},
+  "iot_class": "cloud_polling",
+  "requirements": [
+    "apsystems_api==0.1.4"
+  ],
+  "ssdp": [],
+  "issue_tracker": "https://github.com/mawoka-myblock/apsystemsapi-ha/issues",
+  "version": "0.1.0",
+  "zeroconf": []
+}
