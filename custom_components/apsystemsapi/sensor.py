@@ -37,8 +37,8 @@ async def async_setup_platform(
     inverters = await api.list_inverters()
 
     for inverter in inverters:
-        devices.append(ApsystemsSensorNow(api, inverter, username, password))
-        devices.append(ApsystemsSensorLifetime(api, inverter, username, password))
+        devices.append(ApsystemsSensorNow(api, inverter, config[CONF_USERNAME], config[CONF_PASSWORD]))
+        devices.append(ApsystemsSensorLifetime(api, inverter, config[CONF_USERNAME], config[CONF_PASSWORD]))
 
     add_entities(devices, True)
 
@@ -88,7 +88,7 @@ class ApsystemsSensorNow(SensorEntity):
             self._api.init(self._username, self._password)
         inverter_realtime = await self._api.get_inverter_realtime(self._inverter.inverter_dev_id)
         self._state = inverter_realtime.power
-            
+
         # inverter_statistic = await self._api.get_inverter_statistics(self._inverter.inverter_dev_id)
         # self._state = inverter_statistic.lastPower
 
@@ -101,6 +101,10 @@ class ApsystemsSensorNow(SensorEntity):
     def state(self):
         """Return the state of the sensor."""
         return self._state
+
+    @property
+    def unique_id(self) -> str | None:
+        return f"apsystemsapi_{self._inverter.inverter_dev_id}_now"
 
 class ApsystemsSensorLifetime(SensorEntity):
     """Representation of an APsystem sensor."""
@@ -139,3 +143,7 @@ class ApsystemsSensorLifetime(SensorEntity):
     def state(self):
         """Return the state of the sensor."""
         return self._state
+
+    @property
+    def unique_id(self) -> str | None:
+        return f"apsystemsapi_{self._inverter.inverter_dev_id}_lifetime"
