@@ -37,8 +37,8 @@ async def async_setup_platform(
     inverters = await api.list_inverters()
 
     for inverter in inverters:
-        devices.append(ApsystemsSensorNow(api, inverter, config[CONF_USERNAME], config[CONF_PASSWORD]))
-        devices.append(ApsystemsSensorLifetime(api, inverter, config[CONF_USERNAME], config[CONF_PASSWORD]))
+        devices.append(ApsystemsSensorNow(api, inverter))
+        devices.append(ApsystemsSensorLifetime(api, inverter))
 
     add_entities(devices, True)
 
@@ -62,21 +62,17 @@ class CurrentPower(SensorEntity):
 
 class ApsystemsSensorNow(SensorEntity):
     """Representation of an APsystem sensor."""
-    _username = ""
-    _password = ""
     _attr_native_unit_of_measurement = UnitOfPower.WATT
     _attr_device_class = SensorDeviceClass.POWER
     _attr_state_class = SensorStateClass.MEASUREMENT
 
-    def __init__(self, api, inverter, username, password):
+    def __init__(self, api, inverter):
         """Initialize the sensor."""
         self._api = api
         self._inverter = inverter
         self._state = None
         self._name = f"APsystems {inverter.device_name} Power"
         self._device_class = SensorDeviceClass.POWER
-        self._username = username
-        self._password = password
 
     async def async_update(self):
         """Update the sensor data."""
@@ -85,7 +81,7 @@ class ApsystemsSensorNow(SensorEntity):
             self._state = inverter_realtime.power
             return
         except UnknownError:
-            await self._api.init(self._username, self._password)
+            await self._api.refresh_login()
         inverter_realtime = await self._api.get_inverter_realtime(self._inverter.inverter_dev_id)
         self._state = inverter_realtime.power
 
@@ -106,23 +102,20 @@ class ApsystemsSensorNow(SensorEntity):
     def unique_id(self) -> str | None:
         return f"apsystemsapi_{self._inverter.inverter_dev_id}_now"
 
+
 class ApsystemsSensorLifetime(SensorEntity):
     """Representation of an APsystem sensor."""
-    _username = ""
-    _password = ""
     _attr_native_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR
     _attr_device_class = SensorDeviceClass.POWER
     _attr_state_class = SensorStateClass.TOTAL_INCREASING
 
-    def __init__(self, api, inverter, username, password):
+    def __init__(self, api, inverter):
         """Initialize the sensor."""
         self._api = api
         self._inverter = inverter
         self._state = None
         self._name = f"APsystems {inverter.device_name} All-Time Production"
         self._device_class = SensorDeviceClass.POWER
-        self._username = username
-        self._password = password
 
     async def async_update(self):
         """Update the sensor data."""
@@ -130,7 +123,7 @@ class ApsystemsSensorLifetime(SensorEntity):
             inverter_statistic = await self._api.get_lifetime_graph(self._inverter.inverter_dev_id)
             self._state = inverter_statistic.totalEnergy
         except UnknownError:
-            await self._api.init(self._username, self._password)
+            await self._api.refresh_login()
         inverter_statistic = await self._api.get_lifetime_graph(self._inverter.inverter_dev_id)
         self._state = inverter_statistic.totalEnergy
 
