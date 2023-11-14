@@ -131,6 +131,7 @@ class ApsystemsSensorLifetime(SensorEntity):
             self._state = inverter_statistic.totalEnergy
         except UnknownError:
             await self._api.init(self._username, self._password)
+
         inverter_statistic = await self._api.get_lifetime_graph(self._inverter.inverter_dev_id)
         self._state = inverter_statistic.totalEnergy
 
