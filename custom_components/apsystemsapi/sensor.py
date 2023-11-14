@@ -85,7 +85,7 @@ class ApsystemsSensorNow(SensorEntity):
             self._state = inverter_realtime.power
             return
         except UnknownError:
-            self._api.init(self._username, self._password)
+            await self._api.init(self._username, self._password)
         inverter_realtime = await self._api.get_inverter_realtime(self._inverter.inverter_dev_id)
         self._state = inverter_realtime.power
 
@@ -130,7 +130,7 @@ class ApsystemsSensorLifetime(SensorEntity):
             inverter_statistic = await self._api.get_lifetime_graph(self._inverter.inverter_dev_id)
             self._state = inverter_statistic.totalEnergy
         except UnknownError:
-            self._api.init(self._username, self._password)
+            await self._api.init(self._username, self._password)
         inverter_statistic = await self._api.get_lifetime_graph(self._inverter.inverter_dev_id)
         self._state = inverter_statistic.totalEnergy
 
