@@ -11,10 +11,10 @@
   "homekit": {},
   "iot_class": "cloud_polling",
   "requirements": [
-    "apsystems_api==0.1.13"
+    "apsystems_api==0.1.14"
   ],
   "ssdp": [],
   "issue_tracker": "https://github.com/mawoka-myblock/apsystemsapi-ha/issues",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "zeroconf": []
 }
