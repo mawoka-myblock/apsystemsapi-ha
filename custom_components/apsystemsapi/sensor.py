@@ -1,6 +1,8 @@
 """Platform for sensor integration."""
 from __future__ import annotations
 
+import asyncio
+
 import voluptuous as vol
 
 from homeassistant.components.sensor import (
@@ -16,7 +18,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from apsystems_api import Api as ApApi
-from apsystems_api import UnknownError
+from apsystems_api import TokenExpired
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_USERNAME): cv.string,
@@ -80,8 +82,9 @@ class ApsystemsSensorNow(SensorEntity):
             inverter_realtime = await self._api.get_inverter_realtime(self._inverter.inverter_dev_id)
             self._state = inverter_realtime.power
             return
-        except UnknownError:
+        except TokenExpired:
             await self._api.refresh_login()
+            await asyncio.sleep(3)
         inverter_realtime = await self._api.get_inverter_realtime(self._inverter.inverter_dev_id)
         self._state = inverter_realtime.power
 
@@ -122,7 +125,8 @@ class ApsystemsSensorLifetime(SensorEntity):
         try:
             inverter_statistic = await self._api.get_lifetime_graph(self._inverter.inverter_dev_id)
             self._state = inverter_statistic.totalEnergy
-        except UnknownError:
+        except TokenExpired:
+            await asyncio.sleep(3)
             await self._api.refresh_login()
         inverter_statistic = await self._api.get_lifetime_graph(self._inverter.inverter_dev_id)
         self._state = inverter_statistic.totalEnergy
