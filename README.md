@@ -12,3 +12,6 @@ sensor:
     username: YOUR_USERNAME
     password: YOUR_PASSWORD
 ```
+
+
+More details instructions are in the [Info.md](info.md)
