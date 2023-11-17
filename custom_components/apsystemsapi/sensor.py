@@ -42,6 +42,7 @@ async def async_setup_platform(
     for inverter in inverters:
         devices.append(ApsystemsSensorNow(api, inverter))
         devices.append(ApsystemsSensorLifetime(api, inverter))
+        devices.append(ApsystemsSensorToday(api, inverter))
 
     add_entities(devices, True)
 
