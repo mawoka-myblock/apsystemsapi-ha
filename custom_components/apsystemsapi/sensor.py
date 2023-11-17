@@ -19,6 +19,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from apsystems_api import Api as ApApi
 from apsystems_api import TokenExpired
+from datetime import datetime
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_USERNAME): cv.string,
@@ -144,3 +145,46 @@ class ApsystemsSensorLifetime(SensorEntity):
     @property
     def unique_id(self) -> str | None:
         return f"apsystemsapi_{self._inverter.inverter_dev_id}_lifetime"
+
+
+class ApsystemsSensorToday(SensorEntity):
+    """Representation of an APsystem sensor."""
+    _attr_native_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR
+    _attr_device_class = SensorDeviceClass.POWER
+    _attr_state_class = SensorStateClass.TOTAL
+
+    def __init__(self, api, inverter):
+        """Initialize the sensor."""
+        self._api = api
+        self._inverter = inverter
+        self._state = None
+        self._name = f"APsystems {inverter.device_name} Today Production"
+        self._device_class = SensorDeviceClass.POWER
+
+    async def async_update(self):
+        """Update the sensor data."""
+        now = datetime.now()
+        try:
+            inverter_statistic = await self._api.get_graph(inverter=self._inverter.inverter_dev_id, year=now.year,
+                                                           month=now.month, day=now.day)
+            self._state = inverter_statistic.totalEnergy
+        except TokenExpired:
+            await asyncio.sleep(3)
+            await self._api.refresh_login()
+        inverter_statistic = await self._api.get_graph(inverter=self._inverter.inverter_dev_id, year=now.year,
+                                                       month=now.month, day=now.day)
+        self._state = inverter_statistic.totalEnergy
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return self._name
+
+    @property
+    def state(self):
+        """Return the state of the sensor."""
+        return self._state
+
+    @property
+    def unique_id(self) -> str | None:
+        return f"apsystemsapi_{self._inverter.inverter_dev_id}_today"
