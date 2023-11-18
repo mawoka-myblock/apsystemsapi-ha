@@ -111,8 +111,8 @@ class ApsystemsSensorNow(SensorEntity):
 class ApsystemsSensorLifetime(SensorEntity):
     """Representation of an APsystem sensor."""
     _attr_native_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR
-    _attr_device_class = SensorDeviceClass.POWER
-    _attr_state_class = SensorStateClass.TOTAL_INCREASING
+    _attr_device_class = SensorDeviceClass.ENERGY
+    _attr_state_class = SensorStateClass.TOTAL
 
     def __init__(self, api, inverter):
         """Initialize the sensor."""
@@ -151,8 +151,8 @@ class ApsystemsSensorLifetime(SensorEntity):
 class ApsystemsSensorToday(SensorEntity):
     """Representation of an APsystem sensor."""
     _attr_native_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR
-    _attr_device_class = SensorDeviceClass.POWER
-    _attr_state_class = SensorStateClass.TOTAL
+    _attr_device_class = SensorDeviceClass.ENERGY
+    _attr_state_class = SensorStateClass.TOTAL_INCREASING
 
     def __init__(self, api, inverter):
         """Initialize the sensor."""
