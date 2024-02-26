@@ -1,4 +1,8 @@
 # APsystems API for EZ1-M
+
+This repo is archived as I am using my inverter over the local API, so I can't maintain this repo anymore.
+
+
 Getting the data of the inverter using APsystem's cloud
 
 ## Installation
